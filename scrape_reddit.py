@@ -35,7 +35,8 @@ KEYWORDS = [
     "same songs", "stuck in a rut", "discovery", "repetitive", "new music",
 ]
 MONTHS_BACK = 6
-MAX_COMMENTS_PER_POST = 15
+MAX_COMMENTS_PER_POST = 10
+MAX_POSTS_PER_KEYWORD = 15  # cap comment-fetching per keyword search so a full run finishes in reasonable time
 REQUEST_SLEEP = 4  # seconds between API calls, Arctic Shift rate-limits aggressively
 
 
@@ -129,6 +130,10 @@ def scrape(limit: int = None) -> list:
             logger.info(f"[r/{subreddit}] searching '{keyword}'")
             posts = search_posts(subreddit, keyword, after_date)
             logger.info(f"[r/{subreddit}] '{keyword}': {len(posts)} posts found")
+            # cap how many posts per keyword we fetch comments for, so a full run
+            # across all subreddit x keyword combos finishes in bounded time
+            posts_to_expand = sorted(posts, key=lambda p: p.get("score", 0), reverse=True)[:MAX_POSTS_PER_KEYWORD]
+            expand_ids = {p["id"] for p in posts_to_expand}
 
             for post in posts:
                 if post["id"] in seen_post_ids:
@@ -139,7 +144,7 @@ def scrape(limit: int = None) -> list:
                 if limit and len(items) >= limit:
                     break
 
-                if post.get("num_comments", 0) > 0:
+                if post.get("num_comments", 0) > 0 and post["id"] in expand_ids:
                     comments = fetch_top_level_comments(post["id"])
                     for c in comments:
                         items.append(normalize_comment(c, subreddit, post["id"]))
