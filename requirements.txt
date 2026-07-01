@@ -1,0 +1,7 @@
+streamlit>=1.36
+google-generativeai>=0.8.3
+app-store-scraper>=0.3.5
+google-play-scraper>=1.2.6
+requests
+python-dotenv>=1.0
+pandas>=2.0
