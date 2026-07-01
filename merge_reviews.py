@@ -7,6 +7,7 @@ Usage:
 """
 import json
 import logging
+import random
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s",
                      handlers=[logging.StreamHandler(), logging.FileHandler("data/pipeline.log")])
@@ -51,6 +52,11 @@ def main():
             added += 1
             counts_by_source[item["source"]] = counts_by_source.get(item["source"], 0) + 1
         logger.info(f"{path}: {len(items)} loaded, {added} unique added")
+
+    # shuffle (fixed seed for reproducibility) so a --limit N in tag_reviews.py
+    # samples across all sources instead of taking a prefix in file-concatenation
+    # order (which would grab all App/Play Store reviews before any Reddit/Community)
+    random.Random(42).shuffle(merged)
 
     with open(OUT_PATH, "w") as f:
         for item in merged:
