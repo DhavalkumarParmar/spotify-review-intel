@@ -21,7 +21,7 @@ import pandas as pd
 import streamlit as st
 from dotenv import load_dotenv
 
-from tag_reviews import THEME_VOCAB, SEGMENT_VOCAB, SENTIMENT_VOCAB
+from tag_reviews import tag_batch, PASS1_PROVIDER, PASS1_MODEL
 
 load_dotenv()
 
@@ -65,41 +65,6 @@ SAMPLE_REVIEWS = {
         "phone. Please fix this, very frustrating."
     ),
 }
-
-SINGLE_REVIEW_SCHEMA = {
-    "type": "OBJECT",
-    "properties": {
-        "is_relevant": {"type": "BOOLEAN"},
-        "sentiment": {"type": "STRING", "enum": SENTIMENT_VOCAB},
-        "themes": {"type": "ARRAY", "items": {"type": "STRING", "enum": THEME_VOCAB}},
-        "user_segment_signals": {"type": "ARRAY", "items": {"type": "STRING", "enum": SEGMENT_VOCAB}},
-        "job_to_be_done": {"type": "STRING"},
-        "frustration_root_cause": {"type": "STRING"},
-        "direct_quote": {"type": "STRING"},
-    },
-    "required": [
-        "is_relevant", "sentiment", "themes", "user_segment_signals",
-        "job_to_be_done", "frustration_root_cause", "direct_quote",
-    ],
-}
-
-SINGLE_REVIEW_PROMPT = """You are analyzing a single Spotify user review for a Product Management \
-research project about why users struggle to discover new music.
-
-Return one JSON object with:
-- is_relevant: true only if the review is about music discovery/recommendations (Discover Weekly, \
-Release Radar, algorithm, repetitive suggestions, finding new artists). false for ads, pricing, bugs, \
-UI, payment, unrelated topics.
-- sentiment: one of positive, negative, mixed, neutral
-- themes: array of zero or more from exactly this vocabulary: {themes}
-- user_segment_signals: array of zero or more from exactly this vocabulary: {segments}
-- job_to_be_done: one short sentence in the user's own voice. Empty string if not relevant.
-- frustration_root_cause: one short sentence. Empty string if not relevant or not negative.
-- direct_quote: the single most useful verbatim snippet (max 25 words). Empty string if not relevant.
-
-Review:
-"{review_text}"
-"""
 
 # Process-global (not st.session_state) - the pipeline is a singleton resource
 # shared across every visitor session on the same running Streamlit server, and
@@ -183,8 +148,8 @@ def render_insights_tab():
 def render_workflow_tab():
     st.title("Try the workflow")
     st.write(
-        "This runs one live call to Gemini Flash (Pass 1 tagging) on whatever review text you provide - "
-        "the same structured tagging step used across the full dataset."
+        f"This runs one live call to {PASS1_MODEL} ({PASS1_PROVIDER}) - the same Pass 1 tagging "
+        "logic used across the full dataset - on whatever review text you provide."
     )
 
     if "review_text" not in st.session_state:
@@ -203,17 +168,13 @@ def render_workflow_tab():
         if not review_text.strip():
             st.warning("Paste or select a review first.")
         else:
-            with st.spinner("Calling Gemini Flash..."):
+            with st.spinner(f"Calling {PASS1_MODEL}..."):
                 try:
-                    from llm_client import call_gemini
-                    prompt = SINGLE_REVIEW_PROMPT.format(
-                        themes=", ".join(THEME_VOCAB),
-                        segments=", ".join(SEGMENT_VOCAB),
-                        review_text=review_text,
-                    )
-                    model = os.environ.get("PASS1_MODEL", "gemini-2.5-flash")
-                    result = call_gemini(prompt, model=model, response_schema=SINGLE_REVIEW_SCHEMA)
-                    render_analysis_result(result)
+                    tagged = tag_batch([{"id": "adhoc", "text": review_text}])
+                    if not tagged:
+                        st.error("Analysis failed: the model didn't return a result for this review.")
+                    else:
+                        render_analysis_result(tagged[0])
                 except Exception as e:
                     st.error(f"Analysis failed: {e}")
 
@@ -301,9 +262,11 @@ def render_admin_tab():
         st.rerun()
 
     st.caption(
-        "This re-scrapes all 4 sources (App Store, Play Store, Reddit, Spotify Community), "
-        "retags everything with Gemini Flash, and re-synthesizes with Gemini Flash/Pro. "
-        "The Reddit step is rate-limited and can take 20-40+ minutes."
+        f"This re-scrapes all 4 sources (App Store, Play Store, Reddit, Spotify Community), "
+        f"retags everything with {PASS1_MODEL} ({PASS1_PROVIDER}), and re-synthesizes with "
+        f"{os.environ.get('PASS2_MODEL', 'gemini-2.5-flash')} ({os.environ.get('PASS2_PROVIDER', 'gemini')}). "
+        "The Reddit step is rate-limited and can take 20-40+ minutes. If using a local LM Studio "
+        "provider, this admin server process must be able to reach it (same machine)."
     )
 
     if os.path.exists(LOG_PATH):

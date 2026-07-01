@@ -16,7 +16,7 @@ import os
 
 from dotenv import load_dotenv
 
-from llm_client import call_gemini, request_count
+from llm_client import call_llm, request_count
 
 load_dotenv()
 
@@ -27,7 +27,11 @@ logger = logging.getLogger("tag_reviews")
 IN_PATH = "data/all_reviews.jsonl"
 OUT_PATH = "data/tagged.jsonl"
 REQUEST_COUNT_PATH = "data/.pass1_request_count.json"
-BATCH_SIZE = 8
+# Smaller local models are less reliable at following complex batched-array
+# schemas than Gemini Flash - override via BATCH_SIZE env var if needed
+# (e.g. BATCH_SIZE=4 for a local 2-4B model on modest hardware).
+BATCH_SIZE = int(os.environ.get("BATCH_SIZE", "8"))
+PASS1_PROVIDER = os.environ.get("PASS1_PROVIDER", "gemini")
 PASS1_MODEL = os.environ.get("PASS1_MODEL", "gemini-2.5-flash")
 
 THEME_VOCAB = [
@@ -45,18 +49,18 @@ SEGMENT_VOCAB = [
 SENTIMENT_VOCAB = ["positive", "negative", "mixed", "neutral"]
 
 TAG_SCHEMA = {
-    "type": "ARRAY",
+    "type": "array",
     "items": {
-        "type": "OBJECT",
+        "type": "object",
         "properties": {
-            "id": {"type": "STRING", "description": "must exactly match the review's given id"},
-            "is_relevant": {"type": "BOOLEAN"},
-            "sentiment": {"type": "STRING", "enum": SENTIMENT_VOCAB},
-            "themes": {"type": "ARRAY", "items": {"type": "STRING", "enum": THEME_VOCAB}},
-            "user_segment_signals": {"type": "ARRAY", "items": {"type": "STRING", "enum": SEGMENT_VOCAB}},
-            "job_to_be_done": {"type": "STRING"},
-            "frustration_root_cause": {"type": "STRING"},
-            "direct_quote": {"type": "STRING"},
+            "id": {"type": "string", "description": "must exactly match the review's given id"},
+            "is_relevant": {"type": "boolean"},
+            "sentiment": {"type": "string", "enum": SENTIMENT_VOCAB},
+            "themes": {"type": "array", "items": {"type": "string", "enum": THEME_VOCAB}},
+            "user_segment_signals": {"type": "array", "items": {"type": "string", "enum": SEGMENT_VOCAB}},
+            "job_to_be_done": {"type": "string"},
+            "frustration_root_cause": {"type": "string"},
+            "direct_quote": {"type": "string"},
         },
         "required": [
             "id", "is_relevant", "sentiment", "themes", "user_segment_signals",
@@ -116,7 +120,7 @@ def build_prompt(batch: list) -> str:
 def tag_batch(batch: list) -> list:
     prompt = build_prompt(batch)
     try:
-        results = call_gemini(prompt, model=PASS1_MODEL, response_schema=TAG_SCHEMA)
+        results = call_llm(prompt, model=PASS1_MODEL, response_schema=TAG_SCHEMA, provider=PASS1_PROVIDER)
     except Exception as e:
         logger.error(f"Batch failed entirely (ids={[r['id'] for r in batch]}): {e}")
         return []
@@ -148,7 +152,7 @@ def main():
         return
 
     n_batches = (len(todo) + BATCH_SIZE - 1) // BATCH_SIZE
-    logger.info(f"Estimated Gemini requests for this run: {n_batches} (model={PASS1_MODEL})")
+    logger.info(f"Estimated requests for this run: {n_batches} (provider={PASS1_PROVIDER}, model={PASS1_MODEL})")
 
     mode = "a" if not args.fresh and os.path.exists(OUT_PATH) else "w"
     with open(OUT_PATH, mode) as f:
@@ -163,9 +167,9 @@ def main():
     # request_count() is per-process; synthesize.py runs as a separate subprocess
     # in the full pipeline and can't see this, so persist it for last_run_metadata.json
     with open(REQUEST_COUNT_PATH, "w") as f:
-        json.dump({"pass1_requests": request_count(PASS1_MODEL)}, f)
+        json.dump({"pass1_requests": request_count(PASS1_MODEL, PASS1_PROVIDER)}, f)
 
-    logger.info(f"Done. Total Gemini requests made this session: {request_count()}")
+    logger.info(f"Done. Total requests made this session: {request_count()}")
 
 
 if __name__ == "__main__":

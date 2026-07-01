@@ -22,7 +22,7 @@ from datetime import datetime, timezone
 
 from dotenv import load_dotenv
 
-from llm_client import call_gemini, request_count
+from llm_client import call_llm, request_count
 
 load_dotenv()
 
@@ -35,43 +35,44 @@ REVIEWS_PATH = "data/all_reviews.jsonl"
 SYNTHESIS_JSON_PATH = "data/synthesis.json"
 SYNTHESIS_MD_PATH = "data/synthesis.md"
 METADATA_PATH = "data/last_run_metadata.json"
+PASS2_PROVIDER = os.environ.get("PASS2_PROVIDER", "gemini")
 PASS2_MODEL = os.environ.get("PASS2_MODEL", "gemini-2.5-flash")
 MAX_EVIDENCE_ITEMS = 400  # cap how many relevant reviews we feed into the Pass 2 prompt
 
 SYNTHESIS_SCHEMA = {
-    "type": "OBJECT",
+    "type": "object",
     "properties": {
         "top_jtbds": {
-            "type": "ARRAY",
+            "type": "array",
             "items": {
-                "type": "OBJECT",
+                "type": "object",
                 "properties": {
-                    "jtbd": {"type": "STRING"},
-                    "frequency": {"type": "INTEGER"},
+                    "jtbd": {"type": "string"},
+                    "frequency": {"type": "integer"},
                 },
                 "required": ["jtbd", "frequency"],
             },
         },
-        "top_unmet_needs": {"type": "ARRAY", "items": {"type": "STRING"}},
+        "top_unmet_needs": {"type": "array", "items": {"type": "string"}},
         "top_quotes": {
-            "type": "ARRAY",
+            "type": "array",
             "items": {
-                "type": "OBJECT",
+                "type": "object",
                 "properties": {
-                    "quote": {"type": "STRING"},
-                    "id": {"type": "STRING", "description": "the review id this quote came from"},
+                    "quote": {"type": "string"},
+                    "id": {"type": "string", "description": "the review id this quote came from"},
                 },
                 "required": ["quote", "id"],
             },
         },
         "root_cause_hypotheses": {
-            "type": "ARRAY",
+            "type": "array",
             "items": {
-                "type": "OBJECT",
+                "type": "object",
                 "properties": {
-                    "hypothesis": {"type": "STRING"},
-                    "evidence_count": {"type": "INTEGER"},
-                    "supporting_review_ids": {"type": "ARRAY", "items": {"type": "STRING"}},
+                    "hypothesis": {"type": "string"},
+                    "evidence_count": {"type": "integer"},
+                    "supporting_review_ids": {"type": "array", "items": {"type": "string"}},
                 },
                 "required": ["hypothesis", "evidence_count", "supporting_review_ids"],
             },
@@ -162,8 +163,8 @@ def main():
         evidence_block=evidence_block,
     )
 
-    logger.info(f"Calling {PASS2_MODEL} for synthesis over {len(evidence)} relevant reviews")
-    llm_result = call_gemini(prompt, model=PASS2_MODEL, response_schema=SYNTHESIS_SCHEMA)
+    logger.info(f"Calling {PASS2_MODEL} ({PASS2_PROVIDER}) for synthesis over {len(evidence)} relevant reviews")
+    llm_result = call_llm(prompt, model=PASS2_MODEL, response_schema=SYNTHESIS_SCHEMA, provider=PASS2_PROVIDER)
 
     # attach source/url/author to top_quotes and hypothesis evidence via review id lookup
     for q in llm_result.get("top_quotes", []):
@@ -191,7 +192,7 @@ def main():
     write_markdown(synthesis)
     write_metadata(tagged, reviews)
 
-    logger.info(f"Done. Total Gemini requests made this session: {request_count()}")
+    logger.info(f"Done. Total requests made this session: {request_count()}")
 
 
 def write_markdown(s: dict):
@@ -247,10 +248,12 @@ def write_metadata(tagged: list, reviews: list):
         "total_reviews_scraped": len(reviews),
         "reviews_by_source": dict(source_counts),
         "total_reviews_tagged": len(tagged),
+        "pass1_provider": os.environ.get("PASS1_PROVIDER", "gemini"),
         "pass1_model": os.environ.get("PASS1_MODEL", "gemini-2.5-flash"),
+        "pass2_provider": PASS2_PROVIDER,
         "pass2_model": PASS2_MODEL,
         "pass1_requests_this_session": pass1_requests,
-        "pass2_requests_this_session": request_count(PASS2_MODEL),
+        "pass2_requests_this_session": request_count(PASS2_MODEL, PASS2_PROVIDER),
     }
     with open(METADATA_PATH, "w") as f:
         json.dump(metadata, f, indent=2)

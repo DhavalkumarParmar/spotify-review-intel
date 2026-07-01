@@ -94,11 +94,55 @@ streamlit run app.py
   you link billing, Pro's own free-tier allowance still applies (no charge
   unless you exceed it) - you can then set `PASS2_MODEL=gemini-2.5-pro` for
   higher-quality synthesis.
-- `llm_client.py` throttles requests conservatively (~9 RPM for Flash, ~4.6 RPM
-  for Pro) and retries transient errors (429/500/503) with exponential backoff.
-- `tag_reviews.py` batches 8 reviews per Gemini call and prints the estimated
-  number of requests before running, so you can sanity-check against your
-  daily quota before a large run.
+- **The Flash free-tier daily quota is much lower than published estimates
+  suggest**: a real run against a fresh API key hit `RESOURCE_EXHAUSTED` with
+  `limit: 20` requests/day for `gemini-2.5-flash`. At 8 reviews/batch, that's
+  only ~160 reviews/day for free - tagging a dataset of a few thousand reviews
+  will take many days on the free tier alone, or requires billing linked, or
+  use the local-LLM option below instead.
+- `llm_client.py` throttles Gemini requests conservatively (~9 RPM for Flash,
+  ~4.6 RPM for Pro) and retries transient errors (429/500/503) with
+  exponential backoff.
+- `tag_reviews.py` batches 8 reviews per call (`BATCH_SIZE` env var) and prints
+  the estimated number of requests before running, so you can sanity-check
+  against your daily quota before a large run.
+
+## Running against a local LLM instead (no cost, no daily quota)
+
+Both passes can run against a local OpenAI-compatible server (e.g.
+[LM Studio](https://lmstudio.ai)) instead of Gemini - useful if you don't want
+to link billing and the free tier's ~20 requests/day isn't enough.
+
+**Important**: the local server runs on *your* machine. If you're running
+this project's scripts in a remote/cloud sandbox (like a Claude Code on the
+web session), that sandbox cannot reach `localhost` on your own computer -
+you need to run `tag_reviews.py` / `synthesize.py` (and optionally
+`streamlit run app.py`) directly on the same machine LM Studio is running on.
+
+1. Open LM Studio, load a model (small local models like Gemma, Qwen3, or
+   Nemotron in the 2-4B range work for this), and start the local server
+   (**Developer tab -> Start Server** - default `http://localhost:1234`).
+2. Test the connection first: `python test_lmstudio.py` (auto-detects the
+   loaded model, tests structured JSON output, and tells you what to put in
+   `.env`).
+3. In `.env`, set:
+   ```
+   PASS1_PROVIDER=lmstudio
+   PASS1_MODEL=<model id from test_lmstudio.py's output>
+   PASS2_PROVIDER=lmstudio
+   PASS2_MODEL=<same or a different loaded model>
+   BATCH_SIZE=4
+   ```
+   Smaller local models are less reliable at following the batched-array
+   tagging schema than Gemini Flash - start with a low `BATCH_SIZE` (3-4) and
+   check `data/tagged.jsonl` quality with `--limit 20` before scaling up.
+4. Run the pipeline as normal: `python tag_reviews.py --limit 20` to check
+   quality, then `python tag_reviews.py` for the full run, then
+   `python synthesize.py`.
+5. You can mix providers per pass (e.g. `PASS1_PROVIDER=lmstudio` for the bulk
+   tagging, `PASS2_PROVIDER=gemini` for the one synthesis call using your
+   Gemini free tier, since synthesis is a single request regardless of
+   dataset size).
 
 ## Data source notes / gotchas found while building this
 
