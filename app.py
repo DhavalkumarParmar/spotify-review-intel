@@ -101,9 +101,10 @@ Review:
 "{review_text}"
 """
 
-PIPELINE_STATE = st.session_state.setdefault(
-    "_pipeline_state_holder", {"status": "idle", "error": None}
-)
+# Process-global (not st.session_state) - the pipeline is a singleton resource
+# shared across every visitor session on the same running Streamlit server, and
+# is mutated from a background thread that has no session context of its own.
+PIPELINE_STATE = {"status": "idle", "error": None}
 
 
 @st.cache_data(ttl=30)

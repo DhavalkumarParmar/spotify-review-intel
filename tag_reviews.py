@@ -26,6 +26,7 @@ logger = logging.getLogger("tag_reviews")
 
 IN_PATH = "data/all_reviews.jsonl"
 OUT_PATH = "data/tagged.jsonl"
+REQUEST_COUNT_PATH = "data/.pass1_request_count.json"
 BATCH_SIZE = 8
 PASS1_MODEL = os.environ.get("PASS1_MODEL", "gemini-2.5-flash")
 
@@ -158,6 +159,11 @@ def main():
             for t in tagged:
                 f.write(json.dumps(t) + "\n")
             f.flush()
+
+    # request_count() is per-process; synthesize.py runs as a separate subprocess
+    # in the full pipeline and can't see this, so persist it for last_run_metadata.json
+    with open(REQUEST_COUNT_PATH, "w") as f:
+        json.dump({"pass1_requests": request_count(PASS1_MODEL)}, f)
 
     logger.info(f"Done. Total Gemini requests made this session: {request_count()}")
 

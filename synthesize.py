@@ -35,7 +35,7 @@ REVIEWS_PATH = "data/all_reviews.jsonl"
 SYNTHESIS_JSON_PATH = "data/synthesis.json"
 SYNTHESIS_MD_PATH = "data/synthesis.md"
 METADATA_PATH = "data/last_run_metadata.json"
-PASS2_MODEL = os.environ.get("PASS2_MODEL", "gemini-2.5-pro")
+PASS2_MODEL = os.environ.get("PASS2_MODEL", "gemini-2.5-flash")
 MAX_EVIDENCE_ITEMS = 400  # cap how many relevant reviews we feed into the Pass 2 prompt
 
 SYNTHESIS_SCHEMA = {
@@ -232,6 +232,15 @@ def write_markdown(s: dict):
 
 
 def write_metadata(tagged: list, reviews: list):
+    # tag_reviews.py runs as a separate process/subprocess in the full pipeline,
+    # so llm_client's in-memory request_count() here would only ever see Pass 2's
+    # own calls - read Pass 1's count from the file it persisted instead.
+    pass1_requests = 0
+    pass1_count_path = "data/.pass1_request_count.json"
+    if os.path.exists(pass1_count_path):
+        with open(pass1_count_path) as f:
+            pass1_requests = json.load(f).get("pass1_requests", 0)
+
     source_counts = Counter(r["source"] for r in reviews)
     metadata = {
         "last_run_at": datetime.now(timezone.utc).isoformat(),
@@ -240,7 +249,7 @@ def write_metadata(tagged: list, reviews: list):
         "total_reviews_tagged": len(tagged),
         "pass1_model": os.environ.get("PASS1_MODEL", "gemini-2.5-flash"),
         "pass2_model": PASS2_MODEL,
-        "pass1_requests_this_session": request_count(os.environ.get("PASS1_MODEL", "gemini-2.5-flash")),
+        "pass1_requests_this_session": pass1_requests,
         "pass2_requests_this_session": request_count(PASS2_MODEL),
     }
     with open(METADATA_PATH, "w") as f:

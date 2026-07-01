@@ -6,3 +6,4 @@ venv/
 *.egg-info/
 .DS_Store
 data/pipeline.log
+data/.pass1_request_count.json
