@@ -1,6 +1,5 @@
 streamlit>=1.36
 google-genai>=0.3.0
-app-store-scraper>=0.3.5
 google-play-scraper>=1.2.6
 requests
 python-dotenv>=1.0
