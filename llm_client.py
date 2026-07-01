@@ -47,6 +47,11 @@ _last_call_at = {}  # model -> last call timestamp
 _request_counts = {}  # (provider, model) -> count of calls made this session
 
 LMSTUDIO_BASE_URL = os.environ.get("LMSTUDIO_BASE_URL", "http://localhost:1234/v1")
+# Generous by default: "thinking"/reasoning local models can spend thousands of
+# tokens on internal reasoning before writing the actual JSON answer, and with a
+# batch of several reviews the schema output itself can be long too. Too low a
+# budget means the response gets cut off mid-thought with no real answer at all.
+LMSTUDIO_MAX_TOKENS = int(os.environ.get("LMSTUDIO_MAX_TOKENS", "8192"))
 
 
 def _get_gemini_client():
@@ -164,13 +169,15 @@ def _call_lmstudio(prompt: str, model: str, response_schema: dict, max_retries: 
                     "model": model,
                     "messages": [{"role": "user", "content": prompt}],
                     "temperature": 0.2,
+                    "max_tokens": LMSTUDIO_MAX_TOKENS,
                     "response_format": {
                         "type": "json_schema",
                         "json_schema": {"name": "response", "schema": response_schema, "strict": True},
                     },
                 }
             else:
-                payload = {"model": model, "messages": [{"role": "user", "content": prompt}], "temperature": 0.2}
+                payload = {"model": model, "messages": [{"role": "user", "content": prompt}],
+                           "temperature": 0.2, "max_tokens": LMSTUDIO_MAX_TOKENS}
 
             resp = requests.post(url, json=payload, timeout=180)
 
@@ -187,12 +194,24 @@ def _call_lmstudio(prompt: str, model: str, response_schema: dict, max_retries: 
                     "model": model,
                     "messages": [{"role": "user", "content": fallback_prompt}],
                     "temperature": 0.2,
+                    "max_tokens": LMSTUDIO_MAX_TOKENS,
                     "response_format": {"type": "json_object"},
                 }
                 resp = requests.post(url, json=payload, timeout=180)
 
             resp.raise_for_status()
-            content = resp.json()["choices"][0]["message"]["content"]
+            resp_json = resp.json()
+            content = resp_json["choices"][0]["message"].get("content", "")
+            finish_reason = resp_json["choices"][0].get("finish_reason")
+
+            if not content.strip():
+                raise ValueError(
+                    f"LM Studio returned empty content (finish_reason={finish_reason}). This usually "
+                    f"means the model used its whole token budget 'thinking' and never wrote an answer - "
+                    f"try raising LMSTUDIO_MAX_TOKENS (currently {LMSTUDIO_MAX_TOKENS}) in .env, reducing "
+                    f"BATCH_SIZE, or using a non-reasoning model."
+                )
+
             _request_counts[("lmstudio", model)] = _request_counts.get(("lmstudio", model), 0) + 1
 
             if response_schema is not None:
@@ -208,12 +227,12 @@ def _call_lmstudio(prompt: str, model: str, response_schema: dict, max_retries: 
                 raise
             logger.warning(f"LM Studio unreachable, retrying (attempt {attempt}/{max_retries}): {e}")
             time.sleep(3)
-        except (json.JSONDecodeError, KeyError) as e:
+        except (json.JSONDecodeError, KeyError, ValueError) as e:
             last_error = e
             if attempt == max_retries:
-                logger.error(f"LM Studio returned unparseable response after {max_retries} attempts: {e}")
+                logger.error(f"LM Studio returned unparseable/empty response after {max_retries} attempts: {e}")
                 raise
-            logger.warning(f"Invalid JSON from LM Studio, retrying (attempt {attempt}/{max_retries})")
+            logger.warning(f"Invalid/empty response from LM Studio, retrying (attempt {attempt}/{max_retries}): {e}")
             time.sleep(2)
 
     raise last_error

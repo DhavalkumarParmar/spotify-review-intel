@@ -42,6 +42,7 @@ def test_structured_output(model: str):
         "model": model,
         "messages": [{"role": "user", "content": prompt}],
         "temperature": 0.2,
+        "max_tokens": 4096,
         "response_format": {"type": "json_schema", "json_schema": {"name": "response", "schema": schema, "strict": True}},
     }
     resp = requests.post(f"{BASE_URL}/chat/completions", json=payload, timeout=120)
@@ -53,13 +54,35 @@ def test_structured_output(model: str):
             "model": model,
             "messages": [{"role": "user", "content": fallback_prompt}],
             "temperature": 0.2,
+            "max_tokens": 4096,
             "response_format": {"type": "json_object"},
         }
         resp = requests.post(f"{BASE_URL}/chat/completions", json=payload, timeout=120)
         resp.raise_for_status()
 
-    content = resp.json()["choices"][0]["message"]["content"]
-    print("Raw response:", content)
+    raw = resp.json()
+    message = raw["choices"][0]["message"]
+    content = message.get("content", "")
+    finish_reason = raw["choices"][0].get("finish_reason")
+
+    print(f"finish_reason: {finish_reason}")
+    if "reasoning_content" in message or "reasoning" in message:
+        reasoning = message.get("reasoning_content") or message.get("reasoning")
+        print(f"Model's reasoning/thinking (first 500 chars): {str(reasoning)[:500]}")
+    print("Raw content:", repr(content)[:1000])
+
+    if not content.strip():
+        print(
+            "\nEMPTY CONTENT - this usually means the model spent its whole token budget "
+            "'thinking' and never got to write the actual answer (common with reasoning/"
+            "'Thinking' models on longer schemas). Try:\n"
+            "  1. A non-thinking model instead (often more reliable for this kind of task), or\n"
+            "  2. Increasing max_tokens further (edit this script/llm_client.py), or\n"
+            "  3. In LM Studio's chat settings for this model, check if there's a way to see/limit "
+            "reasoning length."
+        )
+        sys.exit(1)
+
     parsed = json.loads(content)
     print("Parsed OK:", parsed)
     return parsed
