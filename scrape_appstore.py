@@ -30,7 +30,9 @@ MAX_PAGES = 10  # Apple's feed repeats page 10 content beyond this
 
 
 def fetch_page(storefront: str, app_id: int, page: int) -> list:
-    url = f"https://itunes.apple.com/{storefront}/rss/customerreviews/id={app_id}/sortby=mostrecent/json?page={page}"
+    # NOTE: page number must be a path segment, not a query param -
+    # ?page=N is silently ignored by Apple's endpoint and always returns page 1.
+    url = f"https://itunes.apple.com/{storefront}/rss/customerreviews/page={page}/id={app_id}/sortby=mostrecent/json"
     resp = requests.get(url, headers={"User-Agent": USER_AGENT}, timeout=15)
     resp.raise_for_status()
     data = resp.json()
