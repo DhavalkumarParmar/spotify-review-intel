@@ -223,6 +223,7 @@ def run_pipeline_background():
         ("scraping_playstore", [sys.executable, "scrape_playstore.py"]),
         ("scraping_reddit", [sys.executable, "scrape_reddit.py"]),
         ("scraping_community", [sys.executable, "scrape_community.py"]),
+        ("scraping_youtube", [sys.executable, "scrape_youtube.py"]),
         ("merging", [sys.executable, "merge_reviews.py"]),
         ("tagging", [sys.executable, "tag_reviews.py", "--fresh"]),
         ("synthesizing", [sys.executable, "synthesize.py"]),
@@ -262,7 +263,7 @@ def render_admin_tab():
         st.rerun()
 
     st.caption(
-        f"This re-scrapes all 4 sources (App Store, Play Store, Reddit, Spotify Community), "
+        f"This re-scrapes all 5 sources (App Store, Play Store, Reddit, Spotify Community, YouTube), "
         f"retags everything with {PASS1_MODEL} ({PASS1_PROVIDER}), and re-synthesizes with "
         f"{os.environ.get('PASS2_MODEL', 'gemini-2.5-flash')} ({os.environ.get('PASS2_PROVIDER', 'gemini')}). "
         "The Reddit step is rate-limited and can take 20-40+ minutes. If using a local LM Studio "

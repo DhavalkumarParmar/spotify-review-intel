@@ -18,6 +18,7 @@ SOURCE_FILES = [
     "data/playstore.jsonl",
     "data/reddit.jsonl",
     "data/community.jsonl",
+    "data/youtube.jsonl",
 ]
 OUT_PATH = "data/all_reviews.jsonl"
 REQUIRED_FIELDS = ["id", "source", "date", "rating", "text", "author", "url", "scraped_at"]

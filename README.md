@@ -1,9 +1,9 @@
 # spotify-review-intel
 
 AI-powered analysis of Spotify user feedback about music discovery/recommendations,
-built for a Product Management fellowship project. Scrapes reviews from 4 sources,
-tags each with Gemini Flash (Pass 1), synthesizes findings with Gemini (Pass 2),
-and serves the results through a public Streamlit app.
+built for a Product Management fellowship project. Scrapes reviews from 5 sources,
+tags each review (Pass 1) and synthesizes findings (Pass 2) with an LLM (Gemini or
+a local model via LM Studio), and serves the results through a public Streamlit app.
 
 ## What this does
 
@@ -14,10 +14,14 @@ and serves the results through a public Streamlit app.
      public archive API (Reddit's own JSON endpoints are blocked by their
      anti-bot protection from most server environments)
    - Spotify Community forum - via its public LiQL search API
-2. **Tag** every review with Gemini Flash (Pass 1): relevance, sentiment, themes,
-   user segment signals, job-to-be-done, root cause, and a standout quote.
-3. **Synthesize** the tagged dataset into a PM-ready summary with Gemini (Pass 2):
-   top themes, top user segments, top jobs-to-be-done, top unmet needs, the 10
+   - YouTube comments - via the official YouTube Data API v3, filtered to
+     comments that actually mention a discovery-related keyword (video search
+     results skew toward artist/marketing content, so video titles alone
+     aren't a reliable relevance signal)
+2. **Tag** every review (Pass 1): relevance, sentiment, themes, user segment
+   signals, job-to-be-done, root cause, and a standout quote.
+3. **Synthesize** the tagged dataset into a PM-ready summary (Pass 2): top
+   themes, top user segments, top jobs-to-be-done, top unmet needs, the 10
    most powerful quotes, and 3 root-cause hypotheses.
 4. **Serve** the results via a 3-tab Streamlit app: a public insights dashboard,
    a live single-review analyzer anyone can try, and a password-gated admin tab
@@ -30,10 +34,12 @@ scrape_appstore.py    Apple App Store scraper -> data/appstore.jsonl
 scrape_playstore.py   Google Play Store scraper -> data/playstore.jsonl
 scrape_reddit.py      Reddit scraper (via Arctic Shift) -> data/reddit.jsonl
 scrape_community.py   Spotify Community forum scraper -> data/community.jsonl
-merge_reviews.py      Combines + dedupes all 4 sources -> data/all_reviews.jsonl
-tag_reviews.py        Pass 1: Gemini Flash batched tagging -> data/tagged.jsonl
-synthesize.py         Pass 2: Gemini synthesis -> data/synthesis.json, data/synthesis.md
-llm_client.py         Thin Gemini API wrapper (retries, RPM throttling, request counter)
+scrape_youtube.py     YouTube comments scraper (via YouTube Data API v3) -> data/youtube.jsonl
+merge_reviews.py      Combines + dedupes all 5 sources -> data/all_reviews.jsonl
+tag_reviews.py        Pass 1: batched LLM tagging -> data/tagged.jsonl
+synthesize.py         Pass 2: LLM synthesis -> data/synthesis.json, data/synthesis.md
+llm_client.py         Provider-agnostic LLM wrapper (Gemini or local LM Studio)
+test_lmstudio.py      Standalone check that a local LM Studio connection works
 app.py                Streamlit app (3 tabs)
 run_all.sh            Runs the full pipeline end-to-end
 ```
@@ -68,6 +74,7 @@ python scrape_appstore.py                # full run
 python scrape_playstore.py
 python scrape_reddit.py                  # slow - rate-limited, can take 20-40+ min
 python scrape_community.py
+python scrape_youtube.py                 # needs YOUTUBE_API_KEY in .env
 
 python merge_reviews.py
 
@@ -158,6 +165,13 @@ you need to run `tag_reviews.py` / `synthesize.py` (and optionally
 - **Spotify Community's search API** uses `topic.id` (not `conversation.id`,
   despite `conversation.id` appearing in every message object) to fetch all
   messages in a thread.
+- **YouTube video search results are dominated by artist/marketing content**
+  ("how to grow on Spotify's algorithm") rather than listener complaints, even
+  for listener-complaint-phrased queries - video titles alone are a poor
+  relevance filter. `scrape_youtube.py` filters at the *comment* level
+  (keyword match against comment text) and additionally skips videos whose
+  title matches obvious artist-growth-hacking phrasing, which cleaned up the
+  dataset significantly.
 
 ## Streamlit Community Cloud deployment
 
