@@ -37,7 +37,12 @@ SYNTHESIS_MD_PATH = "data/synthesis.md"
 METADATA_PATH = "data/last_run_metadata.json"
 PASS2_PROVIDER = os.environ.get("PASS2_PROVIDER", "gemini")
 PASS2_MODEL = os.environ.get("PASS2_MODEL", "gemini-2.5-flash")
-MAX_EVIDENCE_ITEMS = 400  # cap how many relevant reviews we feed into the Pass 2 prompt
+# Cap how many relevant reviews we feed into the Pass 2 prompt. Gemini's huge
+# context window handles 400 fine, but local models (especially small ones
+# like a 2-4B model in LM Studio) often have a much smaller context window
+# (sometimes just 4k-8k tokens) and will fail with a context-length error at
+# this size - lower this via env var for local runs (try 60-100).
+MAX_EVIDENCE_ITEMS = int(os.environ.get("MAX_EVIDENCE_ITEMS", "400"))
 
 SYNTHESIS_SCHEMA = {
     "type": "object",

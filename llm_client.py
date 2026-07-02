@@ -18,6 +18,7 @@ Note: the older `google-generativeai` package is fully deprecated by Google
 ("all support has ended") in favor of the unified `google-genai` SDK used here.
 """
 import os
+import re
 import time
 import json
 import logging
@@ -181,23 +182,43 @@ def _call_lmstudio(prompt: str, model: str, response_schema: dict, max_retries: 
 
             resp = requests.post(url, json=payload, timeout=180)
 
-            if resp.status_code != 200 and response_schema is not None:
-                # strict schema mode unsupported by this model/backend - retry once with
-                # json_object mode and the schema spelled out in the prompt text instead
-                logger.warning(f"LM Studio rejected json_schema mode (status={resp.status_code}), "
-                                f"falling back to json_object mode with inline schema")
-                fallback_prompt = (
-                    f"{prompt}\n\nRespond with ONLY valid JSON matching this schema "
-                    f"(no markdown, no explanation):\n{json.dumps(response_schema)}"
-                )
-                payload = {
-                    "model": model,
-                    "messages": [{"role": "user", "content": fallback_prompt}],
-                    "temperature": 0.2,
-                    "max_tokens": LMSTUDIO_MAX_TOKENS,
-                    "response_format": {"type": "json_object"},
-                }
-                resp = requests.post(url, json=payload, timeout=180)
+            if resp.status_code != 200:
+                error_body = resp.text[:1000]
+                if re.search(r"context|too long|token limit|exceed", error_body, re.IGNORECASE):
+                    raise ValueError(
+                        f"LM Studio rejected the request (status={resp.status_code}) - this looks like "
+                        f"a CONTEXT LENGTH problem, not a schema issue: {error_body}\n"
+                        f"The prompt is likely too long for this model's context window. Try: reducing "
+                        f"BATCH_SIZE (Pass 1) or MAX_EVIDENCE_ITEMS (Pass 2, synthesize.py), increasing "
+                        f"the model's context length in LM Studio's model load settings, or using a "
+                        f"model with a larger context window."
+                    )
+                if response_schema is not None:
+                    # strict schema mode unsupported by this model/backend - retry once with
+                    # json_object mode and the schema spelled out in the prompt text instead
+                    logger.warning(f"LM Studio rejected json_schema mode (status={resp.status_code}): "
+                                    f"{error_body}. Falling back to json_object mode with inline schema")
+                    fallback_prompt = (
+                        f"{prompt}\n\nRespond with ONLY valid JSON matching this schema "
+                        f"(no markdown, no explanation):\n{json.dumps(response_schema)}"
+                    )
+                    payload = {
+                        "model": model,
+                        "messages": [{"role": "user", "content": fallback_prompt}],
+                        "temperature": 0.2,
+                        "max_tokens": LMSTUDIO_MAX_TOKENS,
+                        "response_format": {"type": "json_object"},
+                    }
+                    resp = requests.post(url, json=payload, timeout=180)
+                    if resp.status_code != 200:
+                        error_body = resp.text[:1000]
+                        if re.search(r"context|too long|token limit|exceed", error_body, re.IGNORECASE):
+                            raise ValueError(
+                                f"LM Studio rejected the fallback request too (status={resp.status_code}) - "
+                                f"CONTEXT LENGTH problem: {error_body}\n"
+                                f"Reduce BATCH_SIZE/MAX_EVIDENCE_ITEMS or increase the model's context "
+                                f"length in LM Studio."
+                            )
 
             resp.raise_for_status()
             resp_json = resp.json()
