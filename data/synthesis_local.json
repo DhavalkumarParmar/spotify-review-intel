@@ -1,0 +1,215 @@
+{
+  "generated_at": "2026-07-02T13:35:17.688902+00:00",
+  "total_relevant_reviews": 1684,
+  "total_reviews_analyzed": 4359,
+  "top_themes": [
+    {
+      "theme": "no_serendipity",
+      "count": 621,
+      "pct": 36.9
+    },
+    {
+      "theme": "algorithm_bias_toward_favorites",
+      "count": 485,
+      "pct": 28.8
+    },
+    {
+      "theme": "repetitive_recommendations",
+      "count": 404,
+      "pct": 24.0
+    },
+    {
+      "theme": "discover_weekly_quality",
+      "count": 275,
+      "pct": 16.3
+    },
+    {
+      "theme": "stuck_in_rut",
+      "count": 232,
+      "pct": 13.8
+    },
+    {
+      "theme": "trust_in_recs",
+      "count": 176,
+      "pct": 10.5
+    },
+    {
+      "theme": "release_radar_quality",
+      "count": 138,
+      "pct": 8.2
+    },
+    {
+      "theme": "explanation_missing",
+      "count": 121,
+      "pct": 7.2
+    },
+    {
+      "theme": "other",
+      "count": 116,
+      "pct": 6.9
+    },
+    {
+      "theme": "autoplay_issues",
+      "count": 94,
+      "pct": 5.6
+    }
+  ],
+  "top_segments": [
+    {
+      "segment": "long_tenure_user",
+      "count": 483,
+      "pct": 28.7
+    },
+    {
+      "segment": "power_user",
+      "count": 308,
+      "pct": 18.3
+    },
+    {
+      "segment": "genre_specialist",
+      "count": 239,
+      "pct": 14.2
+    },
+    {
+      "segment": "casual_listener",
+      "count": 56,
+      "pct": 3.3
+    },
+    {
+      "segment": "mood_based_listener",
+      "count": 55,
+      "pct": 3.3
+    }
+  ],
+  "top_jtbds": [
+    {
+      "jtbd": "I want to find new music.",
+      "frequency": 10
+    },
+    {
+      "jtbd": "I want playlist recommendations that offer new music and different styles.",
+      "frequency": 2
+    },
+    {
+      "jtbd": "I want a truly randomized shuffle without hearing repeats.",
+      "frequency": 1
+    },
+    {
+      "jtbd": "I want to discover new music this week.",
+      "frequency": 1
+    },
+    {
+      "jtbd": "I want to find recommendations for similar songs/artists.",
+      "frequency": 2
+    }
+  ],
+  "top_unmet_needs": [
+    "Lack of true serendipity",
+    "Repetitive recommendations",
+    "Algorithm bias toward favorites",
+    "Inaccurate listening history",
+    "Missing mood and context"
+  ],
+  "top_quotes": [
+    {
+      "quote": "I always get recommended music that I don\u2019t want to listen to.",
+      "id": "appstore-us-14242201859",
+      "source": "appstore_us",
+      "url": "https://itunes.apple.com/us/review?id=324684580&type=Purple%20Software",
+      "author": "Izzi686"
+    },
+    {
+      "quote": "My biggest complaint is the lack of true randomized shuffle. Even with these setting selected, it still feels like it\u2019s following an algorithm. Out of over 5,000 songs in my Liked Playlist, I still hear repeats.",
+      "id": "reddit-post-1ueao0f",
+      "source": "reddit_r_truespotify",
+      "url": "https://www.reddit.com/r/truespotify/comments/1ueao0f/",
+      "author": "kingweezy3374"
+    },
+    {
+      "quote": "I\u2019ve basically been stuck listening to the exact same old English songs on repeat for years.",
+      "id": "reddit-post-1txhftz",
+      "source": "reddit_r_spotify",
+      "url": "https://www.reddit.com/r/spotify/comments/1txhftz/",
+      "author": "non_depreciableasset"
+    },
+    {
+      "quote": "The shuffle algorithm doesn't learn from skipped songs.",
+      "id": "reddit-comment-ou005ba",
+      "source": "reddit_r_truespotify",
+      "url": "https://www.reddit.com/r/truespotify/comments/1ugfyod/comment/ou005ba/",
+      "author": "Trayceopolis32322"
+    },
+    {
+      "quote": "I want the shuffle algorithm to avoid playing songs I skip.",
+      "id": "reddit-comment-ou005ba",
+      "source": "reddit_r_truespotify",
+      "url": "https://www.reddit.com/r/truespotify/comments/1ugfyod/comment/ou005ba/",
+      "author": "Trayceopolis32322"
+    },
+    {
+      "quote": "The algorithm sometimes suggests songs based on events I haven't played.",
+      "id": "reddit-post-1tb2qgb",
+      "source": "reddit_r_truespotify",
+      "url": "https://www.reddit.com/r/truespotify/comments/1tb2qgb/",
+      "author": "Necessary_Ad7325"
+    },
+    {
+      "quote": "Sometimes it has songs that claim I listen to a certain artist event tho I\u2019ve never played them before.",
+      "id": "reddit-post-1tb2qgb",
+      "source": "reddit_r_truespotify",
+      "url": "https://www.reddit.com/r/truespotify/comments/1tb2qgb/",
+      "author": "Necessary_Ad7325"
+    },
+    {
+      "quote": "I want to understand how the algorithm works and improve music blending.",
+      "id": "reddit-post-1tb2qgb",
+      "source": "reddit_r_truespotify",
+      "url": "https://www.reddit.com/r/truespotify/comments/1tb2qgb/",
+      "author": "Necessary_Ad7325"
+    },
+    {
+      "quote": "Spotify DJ endless repeats, shuffle on likes songs same problem. Discovering new music offers 1 playlist and its horrible.",
+      "id": "reddit-post-1tv1lbg",
+      "source": "reddit_r_truespotify",
+      "url": "https://www.reddit.com/r/truespotify/comments/1tv1lbg/",
+      "author": "AntFirm4593"
+    },
+    {
+      "quote": "I've basically been stuck listening to the exact same old English songs on repeat for years.",
+      "id": "reddit-post-1txhftz",
+      "source": "reddit_r_spotify",
+      "url": "https://www.reddit.com/r/spotify/comments/1txhftz/",
+      "author": "non_depreciableasset"
+    }
+  ],
+  "root_cause_hypotheses": [
+    {
+      "hypothesis": "The current recommendation system is overly focused on existing user favorites, leading to a lack of true discovery.",
+      "evidence_count": 5,
+      "supporting_review_ids": [
+        "reddit-post-1ueao0f",
+        "reddit-post-1tu7qhy",
+        "reddit-post-1t3c9gn",
+        "reddit-post-1tp2vzo",
+        "reddit-post-1tb2qgb"
+      ]
+    },
+    {
+      "hypothesis": "The shuffle and shuffle features fail to account for user skips, leading to repetitive listening experiences.",
+      "evidence_count": 3,
+      "supporting_review_ids": [
+        "reddit-comment-ou005ba",
+        "reddit-comment-ou005ba",
+        "reddit-comment-ou005ba"
+      ]
+    },
+    {
+      "hypothesis": "The algorithm incorrectly pushes irrelevant songs into the user's listening history, corrupting historical data.",
+      "evidence_count": 2,
+      "supporting_review_ids": [
+        "reddit-post-1uacd0q",
+        "reddit-comment-o7okhfa"
+      ]
+    }
+  ]
+}

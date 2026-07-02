@@ -1,0 +1,229 @@
+{
+  "generated_at": "2026-07-02T13:48:23.025437+00:00",
+  "total_relevant_reviews": 1684,
+  "total_reviews_analyzed": 4359,
+  "top_themes": [
+    {
+      "theme": "no_serendipity",
+      "count": 621,
+      "pct": 36.9
+    },
+    {
+      "theme": "algorithm_bias_toward_favorites",
+      "count": 485,
+      "pct": 28.8
+    },
+    {
+      "theme": "repetitive_recommendations",
+      "count": 404,
+      "pct": 24.0
+    },
+    {
+      "theme": "discover_weekly_quality",
+      "count": 275,
+      "pct": 16.3
+    },
+    {
+      "theme": "stuck_in_rut",
+      "count": 232,
+      "pct": 13.8
+    },
+    {
+      "theme": "trust_in_recs",
+      "count": 176,
+      "pct": 10.5
+    },
+    {
+      "theme": "release_radar_quality",
+      "count": 138,
+      "pct": 8.2
+    },
+    {
+      "theme": "explanation_missing",
+      "count": 121,
+      "pct": 7.2
+    },
+    {
+      "theme": "other",
+      "count": 116,
+      "pct": 6.9
+    },
+    {
+      "theme": "autoplay_issues",
+      "count": 94,
+      "pct": 5.6
+    }
+  ],
+  "top_segments": [
+    {
+      "segment": "long_tenure_user",
+      "count": 483,
+      "pct": 28.7
+    },
+    {
+      "segment": "power_user",
+      "count": 308,
+      "pct": 18.3
+    },
+    {
+      "segment": "genre_specialist",
+      "count": 239,
+      "pct": 14.2
+    },
+    {
+      "segment": "casual_listener",
+      "count": 56,
+      "pct": 3.3
+    },
+    {
+      "segment": "mood_based_listener",
+      "count": 55,
+      "pct": 3.3
+    }
+  ],
+  "top_jtbds": [
+    {
+      "jtbd": "I want to discover genuinely new music and artists, beyond what I already know or what the algorithm typically suggests.",
+      "frequency": 114
+    },
+    {
+      "jtbd": "I want to avoid repetitive songs and receive more variety in recommendations and playback, especially from my existing library.",
+      "frequency": 88
+    },
+    {
+      "jtbd": "I want music recommendations that accurately align with my specific taste, mood, genre preferences, or desired aesthetic.",
+      "frequency": 75
+    },
+    {
+      "jtbd": "I want more control over how the algorithm and playback features work, including shuffle, filtering, and managing unwanted content.",
+      "frequency": 53
+    },
+    {
+      "jtbd": "I want easy and reliable access to new music releases and album information from artists I follow.",
+      "frequency": 14
+    }
+  ],
+  "top_unmet_needs": [
+    "Lack of genuine novelty in recommendations",
+    "Repetitive playback and algorithmic loops",
+    "Inaccurate or biased recommendations that don't match taste/mood",
+    "Insufficient user control over algorithmic behavior and content filtering",
+    "Poor discoverability of new or niche artists/albums"
+  ],
+  "top_quotes": [
+    {
+      "quote": "Spotify DJ endless repeats, shuffle on likes songs same problem. Discovering new music offers 1 playlist and its horrible.",
+      "id": "reddit-post-1tv1lbg",
+      "source": "reddit_r_truespotify",
+      "url": "https://www.reddit.com/r/truespotify/comments/1tv1lbg/",
+      "author": "AntFirm4593"
+    },
+    {
+      "quote": "I\u2019ve basically been stuck listening to the exact same old English songs on repeat for years.",
+      "id": "reddit-post-1txhftz",
+      "source": "reddit_r_spotify",
+      "url": "https://www.reddit.com/r/spotify/comments/1txhftz/",
+      "author": "non_depreciableasset"
+    },
+    {
+      "quote": "My Discover Weekly sucks, and I don\u2019t know how to \u201cfix\u201d it. All the music in my discover weekly is nothing like what I like or listen to or what I want to listen to.",
+      "id": "reddit-post-1rxx7do",
+      "source": "reddit_r_truespotify",
+      "url": "https://www.reddit.com/r/truespotify/comments/1rxx7do/",
+      "author": "NevronWasTaken"
+    },
+    {
+      "quote": "I know what music I like, and I want to venture beyond my usual. But I can't because everything is 'made for me.'",
+      "id": "reddit-comment-os3mfko",
+      "source": "reddit_r_truespotify",
+      "url": "https://www.reddit.com/r/truespotify/comments/1u7tzij/comment/os3mfko/",
+      "author": "Potential-Scholar359"
+    },
+    {
+      "quote": "Spotify's algorithm has gotten so bad at actually surprising me \u2014 anyone else?. Used to open Discover Weekly and find at least 2-3 songs I'd never heard that just clicked. Now it's the same sonic palette recycled every week.",
+      "id": "reddit-post-1rre7ro",
+      "source": "reddit_r_truespotify",
+      "url": "https://www.reddit.com/r/truespotify/comments/1rre7ro/",
+      "author": "True-Struggle-1297"
+    },
+    {
+      "quote": "My biggest complaint is the lack of true randomized shuffle. Even with these setting selected, it still feels like it\u2019s following an algorithm. Out of over 5,000 songs in my Liked Playlist, I still hear repeats.",
+      "id": "reddit-post-1ueao0f",
+      "source": "reddit_r_truespotify",
+      "url": "https://www.reddit.com/r/truespotify/comments/1ueao0f/",
+      "author": "kingweezy3374"
+    },
+    {
+      "quote": "If you're going to let AI slop flood Discover Weekly and Release Radar \u2014 the two features that actually justified paying \u2014 just say so, so I can stop pretending this subscription still makes sense.",
+      "id": "reddit-post-1tyzvmj",
+      "source": "reddit_r_truespotify",
+      "url": "https://www.reddit.com/r/truespotify/comments/1tyzvmj/",
+      "author": "AmericanMustache"
+    },
+    {
+      "quote": "Spotify's recommendation engine is not built to help you discover music. It is built to keep you listening.",
+      "id": "reddit-post-1sjd4e9",
+      "source": "reddit_r_spotify",
+      "url": "https://www.reddit.com/r/spotify/comments/1sjd4e9/",
+      "author": "Ok-Dimension-3307"
+    },
+    {
+      "quote": "I'm so sick of this shuffle algorithm. It plays the same songs in the same order every goddamn day",
+      "id": "reddit-post-1ugfyod",
+      "source": "reddit_r_truespotify",
+      "url": "https://www.reddit.com/r/truespotify/comments/1ugfyod/",
+      "author": "smol_coc_man"
+    },
+    {
+      "quote": "I love mainstream music, but I got bored of hearing the same songs everywhere, so I spent time digging through thousands of songs from the last 10+ years to find these hidden gems.",
+      "id": "reddit-post-1uk8uiv",
+      "source": "reddit_r_spotify",
+      "url": "https://www.reddit.com/r/spotify/comments/1uk8uiv/",
+      "author": "PYZOxLIFE"
+    }
+  ],
+  "root_cause_hypotheses": [
+    {
+      "hypothesis": "Spotify's algorithms are overly optimized for engagement (listening duration) and reinforcing existing taste, rather than prioritizing genuine novelty or diverse discovery.",
+      "evidence_count": 86,
+      "supporting_review_ids": [
+        "reddit-post-1sjd4e9",
+        "reddit-post-1rre7ro",
+        "reddit-post-1tv1lbg",
+        "reddit-post-1qai045",
+        "reddit-comment-os3mfko",
+        "reddit-post-1q5g1iw",
+        "reddit-post-1rxx7do",
+        "youtube-comment-Ugy0EDeTgYJMKFezpPl4AaABAg"
+      ]
+    },
+    {
+      "hypothesis": "The shuffle and playback features are perceived as broken or non-random, leading to repetitive listening and hindering the accidental discovery of new music within existing libraries.",
+      "evidence_count": 52,
+      "supporting_review_ids": [
+        "reddit-post-1ueao0f",
+        "reddit-post-1ugfyod",
+        "reddit-post-1u9zcwp",
+        "reddit-post-1u9800b",
+        "appstore-us-14241147172",
+        "playstore-e871ee42-9423-49dc-a165-df5730bee45e",
+        "youtube-comment-Ugwran4QmEP8bGB-Z3p4AaABAg",
+        "youtube-comment-Ugwk4jhh3TP3gDCxZN14AaABAg"
+      ]
+    },
+    {
+      "hypothesis": "The influx of low-quality or AI-generated content, particularly in discovery playlists, erodes user trust and makes it harder for legitimate new artists and songs to be discovered.",
+      "evidence_count": 27,
+      "supporting_review_ids": [
+        "reddit-post-1tyzvmj",
+        "reddit-comment-onz58gi",
+        "reddit-post-1s0ymoo",
+        "reddit-post-1s96w1j",
+        "reddit-post-1t4ihxn",
+        "reddit-post-1u38jkn",
+        "reddit-comment-o9j17z2",
+        "reddit-post-1slyldf"
+      ]
+    }
+  ]
+}

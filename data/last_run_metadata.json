@@ -1,0 +1,21 @@
+{
+  "last_run_at": "2026-07-02T13:48:23.029832+00:00",
+  "total_reviews_scraped": 4360,
+  "reviews_by_source": {
+    "reddit_r_spotify": 839,
+    "reddit_r_SpotifyPlaylists": 600,
+    "appstore_in": 350,
+    "reddit_r_truespotify": 1212,
+    "youtube": 354,
+    "playstore": 500,
+    "appstore_us": 500,
+    "spotify_community": 5
+  },
+  "total_reviews_tagged": 4359,
+  "pass1_provider": "lmstudio",
+  "pass1_model": "google/gemma-4-e2b",
+  "pass2_provider": "gemini",
+  "pass2_model": "gemini-2.5-flash",
+  "pass1_requests_this_session": 93,
+  "pass2_requests_this_session": 1
+}
