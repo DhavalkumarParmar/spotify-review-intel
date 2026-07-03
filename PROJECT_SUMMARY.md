@@ -1,8 +1,7 @@
 # Spotify Discovery Pain — Project Summary & Build Journey
 
 This document captures the thought process, decisions, and real difficulties behind building
-this tool — meant as source material for a deck, not a technical README (see `README.md` for
-setup/usage instructions).
+this tool.
 
 **Live app**: https://spotify-review-intel.streamlit.app/
 **Repo**: https://github.com/DhavalkumarParmar/spotify-review-intel
@@ -17,8 +16,7 @@ struggle to discover new music**, by analyzing real user feedback at scale from 
 sources, then synthesizing insights a PM could act on — not just a scraper, but a full pipeline
 from raw complaints to a demoable product.
 
-This is Part 1 of a 4-part project, built in roughly 3 days total, with this component due in
-under 1 day (it ended up spanning the full window as complications surfaced — see below).
+This is Part 1 of a 4-part project.
 
 ## 2. System Architecture — Three Layers
 
