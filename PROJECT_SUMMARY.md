@@ -145,22 +145,17 @@ the process was genuinely investigative, not just "call an API and done."
    creation. Ultimately used **Arctic Shift**, a public, free, community-run mirror of Reddit's
    archived data (successor to Pushshift).
 
-4. **An early Reddit scraper design had a real bug**, caught in a structured code review: a
-   per-keyword comment-fetching cap meant a post's eligibility for comment-fetching depended on
-   an arbitrary keyword-search-order artifact rather than any real ranking. Fixed by switching
-   to a global cap instead.
-
-5. **Spotify Community's search API has a confusing field name**: fetching all messages in a
+4. **Spotify Community's search API has a confusing field name**: fetching all messages in a
    thread requires filtering on `topic.id`, not `conversation.id` — even though every message
    object *has* a `conversation.id` field, using it throws a validation error.
 
-6. **Gemini's free tier is much stingier than published estimates suggest.** Testing live:
+5. **Gemini's free tier is much stingier than published estimates suggest.** Testing live:
    `gemini-2.5-pro` (and every other Pro-tier model) has **zero** free-tier quota unless billing
    is linked to the Google Cloud project. `gemini-2.5-flash`'s real daily quota turned out to be
    **20 requests/day** — nowhere near the 250-500/day figures floating around online. This alone
    would have made tagging 4,000+ reviews take weeks on the free tier.
 
-7. **No budget for billing** → pivoted to running Pass 1 (and optionally Pass 2) against a
+6. **No budget for billing** → pivoted to running Pass 1 (and optionally Pass 2) against a
    **local LLM via LM Studio** on a personal M1 MacBook Air — free, no quota, but introduced a
    new set of problems:
    - LM Studio runs on the user's own machine, not any cloud sandbox, so the actual tagging had
@@ -179,25 +174,14 @@ the process was genuinely investigative, not just "call an API and done."
      detecting and logging the gap; the dropped review just gets retried on the next run since
      it's resumable.
 
-8. **YouTube video search results are dominated by artist/marketing content.** Searching
+7. **YouTube video search results are dominated by artist/marketing content.** Searching
    "spotify algorithm" surfaces "how to grow your streams" videos for musicians, not listener
    complaints — even with complaint-phrased search queries. Fixed with comment-level keyword
    filtering plus a video-title exclusion list for obvious growth-hacking content, which
    substantially cleaned up the signal (first unfiltered test: 29/29 comments were off-topic
    artist-marketing chatter).
 
-9. **GitHub push access was blocked twice** in the cloud build environment — once from the git
-   CLI's credential relay, once from the GitHub App integration lacking write/branch-creation
-   permission — both needed a permissions fix outside the coding session itself.
-
-10. **Local git authentication also failed** on the user's Mac with "password authentication is
-    not supported" — GitHub deprecated password-based git auth years ago; fixed with a Personal
-    Access Token used as the git password.
-
-11. **Streamlit Cloud's sharing setting** needed an explicit "make public" toggle — otherwise the
-    deployed app silently redirected visitors to a login page instead of showing the app.
-
-12. **A structured 8-angle code review** (correctness, reuse, simplification, efficiency,
+8. **A structured 8-angle code review** (correctness, reuse, simplification, efficiency,
     altitude, conventions) caught several real, non-obvious bugs before they reached production
     data — including the Reddit cap-scoping bug above, a Pass-2 model fallback that still
     defaulted to the zero-quota Pro model despite being "fixed" everywhere else, and a Streamlit
