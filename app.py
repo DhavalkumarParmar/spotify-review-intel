@@ -148,8 +148,8 @@ def render_insights_tab():
 def render_workflow_tab():
     st.title("Try the workflow")
     st.write(
-        f"This runs one live call to {PASS1_MODEL} ({PASS1_PROVIDER}) - the same Pass 1 tagging "
-        "logic used across the full dataset - on whatever review text you provide."
+        "Paste any Spotify review below (or pick a sample) to see the AI tagging engine in "
+        "action - the same analysis used to build the insights in the first tab."
     )
 
     if "review_text" not in st.session_state:
